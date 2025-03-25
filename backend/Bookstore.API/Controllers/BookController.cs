@@ -12,10 +12,30 @@ namespace Bookstore.API.Controllers
 
         public BookController(BookDbContext temp) => _bookContext = temp;
 
-        [HttpGet]
-        public IEnumerable <Book> GetBooks()
+        [HttpGet("paged")]
+        public IActionResult GetBooks(int pageSize = 5, int pageNum = 1, string sortOrder = "asc")
         {
-            return _bookContext.Books.ToList();
+            var query = _bookContext.Books.AsQueryable();
+
+            // Sort by title
+            query = sortOrder.ToLower() == "desc"
+                ? query.OrderByDescending(b => b.Title)
+                : query.OrderBy(b => b.Title);
+
+            var books = query
+                .Skip(pageSize * (pageNum - 1))
+                .Take(pageSize)
+                .ToList();
+
+            var totalNumBooks = _bookContext.Books.Count();
+
+            var result = new
+            {
+                Books = books,
+                TotalNumBooks = totalNumBooks
+            };
+
+            return Ok(result);
         }
     }
 }
