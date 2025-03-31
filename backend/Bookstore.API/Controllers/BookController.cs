@@ -13,9 +13,16 @@ namespace Bookstore.API.Controllers
         public BookController(BookDbContext temp) => _bookContext = temp;
 
         [HttpGet("paged")]
-        public IActionResult GetBooks(int pageSize = 5, int pageNum = 1, string sortOrder = "asc")
+        public IActionResult GetBooks(int pageSize = 5, int pageNum = 1, string sortOrder = "asc", [FromQuery] List<string>? types = null)
         {
             var query = _bookContext.Books.AsQueryable();
+
+            if (types != null && types.Any())
+            {
+                query = query.Where(b => types.Contains(b.Category));
+            }
+
+            var totalNumBooks = query.Count();
 
             // Sort by title
             query = sortOrder.ToLower() == "desc"
@@ -27,8 +34,6 @@ namespace Bookstore.API.Controllers
                 .Take(pageSize)
                 .ToList();
 
-            var totalNumBooks = _bookContext.Books.Count();
-
             var result = new
             {
                 Books = books,
@@ -36,6 +41,16 @@ namespace Bookstore.API.Controllers
             };
 
             return Ok(result);
+        }
+
+        [HttpGet("types")]
+        public IActionResult GetBookTypes()
+        {
+            var bookTypes = _bookContext.Books
+                .Select(b => new { b.Category })
+                .Distinct()
+                .ToList();
+            return Ok(bookTypes);
         }
     }
 }
