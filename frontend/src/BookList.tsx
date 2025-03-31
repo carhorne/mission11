@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {Book} from './types/Book';
 
-function ProjectList() {
+function ProjectList({selectedCategories} : {selectedCategories: string[]}) {
 
 const [books, setBooks] = useState<Book[]>([]);
 const [pageSize, setPageSize] = useState<number>(5);
@@ -12,7 +12,10 @@ const [sortOrder, setSortOrder] = useState<string>("asc");
 
 useEffect(() => {
     const fetchBooks = async () => {
-      const response = await fetch(`https://localhost:5000/Book/paged?pageSize=${pageSize}&pageNum=${pageNum}&sortOrder=${sortOrder}`);
+        const categoryParams = selectedCategories.map((cat) => `types=${encodeURIComponent(cat)}`)
+        .join('&');
+
+      const response = await fetch(`https://localhost:5000/Book/paged?pageSize=${pageSize}&pageNum=${pageNum}&sortOrder=${sortOrder}${selectedCategories.length ? `&${categoryParams}` : ''}`);
       const data = await response.json();
       setBooks(data.books);
       setTotalItems(data.totalNumBooks);
@@ -20,11 +23,10 @@ useEffect(() => {
     };
 
     fetchBooks();
-}, [pageSize, pageNum, sortOrder]);
+}, [pageSize, pageNum, sortOrder, selectedCategories]);
 
     return (
         <>
-            <h1>Carson's Bookstore</h1>
             <button onClick={() => {
                 setSortOrder(sortOrder === "asc" ? "desc" : "asc");
                 setPageNum(1); // Reset to the first page when sorting changes
