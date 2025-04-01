@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import {Book} from './types/Book';
+import {Book} from '../types/Book';
+import { useNavigate } from "react-router-dom";
 
-function ProjectList({selectedCategories} : {selectedCategories: string[]}) {
+function BookList({selectedCategories} : {selectedCategories: string[]}) {
 
 const [books, setBooks] = useState<Book[]>([]);
 const [pageSize, setPageSize] = useState<number>(5);
@@ -9,6 +10,11 @@ const [pageNum, setPageNum] = useState<number>(1);
 const [totalItems, setTotalItems] = useState<number>(0);
 const [totalPages, setTotalPages] = useState<number>(0);
 const [sortOrder, setSortOrder] = useState<string>("asc");
+const navigate = useNavigate();
+
+useEffect(() => {
+    setPageNum(1); // Reset pageNum when selectedCategories change
+}, [selectedCategories]);
 
 useEffect(() => {
     const fetchBooks = async () => {
@@ -47,8 +53,9 @@ useEffect(() => {
                         <li><strong>Page Count: </strong>{b.pageCount}</li>
                         <li><strong>Price: </strong>${b.price}</li>
                     </ul>
-                    </div>
-                    
+
+                    <button className="btn btn-success" onClick={() => navigate(`/buy/${b.title}/${b.price}/${b.bookID}`)}>Buy</button>
+                    </div>                   
                 </div>
         
         )}
@@ -84,4 +91,4 @@ useEffect(() => {
     );
 }
 
-export default ProjectList;
+export default BookList;
