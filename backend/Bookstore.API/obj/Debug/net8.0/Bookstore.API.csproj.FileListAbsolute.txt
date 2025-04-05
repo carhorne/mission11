@@ -69,3 +69,11 @@ C:\Users\carso\OneDrive\Desktop\Bookstore\backend\Bookstore.API\bin\Debug\net8.0
 C:\Users\carso\OneDrive\Desktop\Bookstore\backend\Bookstore.API\bin\Debug\net8.0\runtimes\win-x64\native\e_sqlite3.dll
 C:\Users\carso\OneDrive\Desktop\Bookstore\backend\Bookstore.API\bin\Debug\net8.0\runtimes\win-x86\native\e_sqlite3.dll
 C:\Users\carso\OneDrive\Desktop\Bookstore\backend\Bookstore.API\obj\Debug\net8.0\Bookstore.API.sourcelink.json
+C:\Users\carso\OneDrive\Desktop\Bookstore\backend\Bookstore.API\bin\Debug\net8.0\Bookstore.sqlite
+C:\Users\carso\OneDrive\Desktop\Bookstore\backend\Bookstore.API\bin\Debug\net8.0\Publish\web.config
+C:\Users\carso\OneDrive\Desktop\Bookstore\backend\Bookstore.API\bin\Debug\net8.0\Publish\appsettings.Development.json
+C:\Users\carso\OneDrive\Desktop\Bookstore\backend\Bookstore.API\bin\Debug\net8.0\Publish\appsettings.json
+C:\Users\carso\OneDrive\Desktop\Bookstore\backend\Bookstore.API\bin\Debug\net8.0\Publish\Bookstore.API.deps.json
+C:\Users\carso\OneDrive\Desktop\Bookstore\backend\Bookstore.API\bin\Debug\net8.0\Publish\Bookstore.API.runtimeconfig.json
+C:\Users\carso\OneDrive\Desktop\Bookstore\backend\Bookstore.API\bin\Debug\net8.0\Publish\Bookstore.API.staticwebassets.endpoints.json
+C:\Users\carso\OneDrive\Desktop\Bookstore\backend\Bookstore.API\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
