@@ -1,35 +1,43 @@
 import { useEffect, useState } from "react";
 import {Book} from '../types/Book';
 import { useNavigate } from "react-router-dom";
+import { fetchBooks } from "../api/BooksAPI";
+import Pagination from "./Pagination";
 
 function BookList({selectedCategories} : {selectedCategories: string[]}) {
 
 const [books, setBooks] = useState<Book[]>([]);
 const [pageSize, setPageSize] = useState<number>(5);
 const [pageNum, setPageNum] = useState<number>(1);
-const [totalItems, setTotalItems] = useState<number>(0);
 const [totalPages, setTotalPages] = useState<number>(0);
 const [sortOrder, setSortOrder] = useState<string>("asc");
 const navigate = useNavigate();
+const [error, setError] = useState <string | null>(null);
+const [loading, setLoading] = useState(true);
 
 useEffect(() => {
     setPageNum(1); // Reset pageNum when selectedCategories change
 }, [selectedCategories]);
 
 useEffect(() => {
-    const fetchBooks = async () => {
-        const categoryParams = selectedCategories.map((cat) => `types=${encodeURIComponent(cat)}`)
-        .join('&');
-
-      const response = await fetch(`https://localhost:5000/Book/paged?pageSize=${pageSize}&pageNum=${pageNum}&sortOrder=${sortOrder}${selectedCategories.length ? `&${categoryParams}` : ''}`);
-      const data = await response.json();
-      setBooks(data.books);
-      setTotalItems(data.totalNumBooks);
-      setTotalPages(Math.ceil(data.totalNumBooks / pageSize));
+    const loadBooks = async () => {
+        try {
+            setLoading(true);
+            const data = await fetchBooks(pageSize, pageNum, sortOrder, selectedCategories);
+            setBooks(data.books);
+            setTotalPages(Math.ceil(data.totalNumBooks / pageSize));
+        } catch (error) {
+            setError((error as Error).message);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    fetchBooks();
+    loadBooks();
 }, [pageSize, pageNum, sortOrder, selectedCategories]);
+
+if (loading) return <p>Loading books...</p>
+if (error) return <p className="text-red-500">Error: {error}</p>
 
     return (
         <>
@@ -55,39 +63,19 @@ useEffect(() => {
                     </ul>
 
                     <button className="btn btn-success" onClick={() => navigate(`/buy/${b.title}/${b.price}/${b.bookID}`)}>Buy</button>
-                    </div>                   
+                    </div>   
                 </div>
-        
         )}
-
-        <button disabled={pageNum === 1} onClick={() => setPageNum(pageNum - 1)}>Previous</button>
-
-        {
-            [...Array(totalPages)].map((_, index) => (
-                <button key={index + 1} onClick={() => setPageNum(index + 1)} disabled={pageNum === (index + 1)}>
-                    {index + 1}
-                </button>
-            ))
-        }
-
-        <button disabled={pageNum === totalPages} onClick={() => setPageNum(pageNum + 1)}>Next</button>
-
-        <br />
-        <label>
-            Results per page:
-            <select value={pageSize} 
-            onChange={(p) => {
-                setPageSize(Number(p.target.value));
-                setPageNum(1)
-                }}>
-                <option value="5">5</option>
-                <option value="10">10</option>
-                <option value="20">20</option>
-            </select>
-        </label>
-
+        <Pagination 
+            currentPage={pageNum}
+            totalPages={totalPages}
+            pageSize={pageSize}
+            onPageChange={setPageNum}
+            onPageSizeChange={(newSize) => {
+                setPageSize(newSize);
+                setPageNum(1);
+            }}/>
         </>
-
     );
 }
 
