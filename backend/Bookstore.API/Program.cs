@@ -10,13 +10,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<BookDbContext>(options =>
+builder.Services.AddDbContext<EntertainmentAgencyContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("BookConnection")));
 
 builder.Services.AddCors(options =>
     options.AddPolicy("AllowReactAppBlah", 
         policy => {
-            policy.WithOrigins("http://localhost:3000")
+            policy.AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader();
     }));

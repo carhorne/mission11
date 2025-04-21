@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "undefined/subscriptions/aac0b1a4-1428-4d76-b2e4-57368de2211c/resourceGroups/appsvc_windows_westus/providers/Microsoft.Web/sites/final-horne-backend",
+    "appService.deploySubpath": "backend\\Bookstore.API\\publish"
+}

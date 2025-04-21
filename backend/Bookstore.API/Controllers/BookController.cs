@@ -1,101 +1,89 @@
-﻿using Bookstore.API.Data;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using Bookstore.API.Data;
 
-namespace Bookstore.API.Controllers
+namespace EntertainmentAgency.API.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
-    public class BookController : ControllerBase
+    public class EntertainersController : ControllerBase
     {
-        private BookDbContext _bookContext;
+        private readonly EntertainmentAgencyContext _context;
 
-        public BookController(BookDbContext temp) => _bookContext = temp;
-
-        [HttpGet("paged")]
-        public IActionResult GetBooks(int pageSize = 5, int pageNum = 1, string sortOrder = "asc", [FromQuery] List<string>? types = null)
+        public EntertainersController(EntertainmentAgencyContext context)
         {
-            var query = _bookContext.Books.AsQueryable();
+            _context = context;
+        }
 
-            if (types != null && types.Any())
-            {
-                query = query.Where(b => types.Contains(b.Category));
-            }
+        // GET: api/entertainers
+        [HttpGet]
+        public IActionResult GetEntertainersSummary()
+        {
+            // Bring engagements into memory
+            var engagements = _context.Engagements.ToList();
 
-            var totalNumBooks = query.Count();
-
-            // Sort by title
-            query = sortOrder.ToLower() == "desc"
-                ? query.OrderByDescending(b => b.Title)
-                : query.OrderBy(b => b.Title);
-
-            var books = query
-                .Skip(pageSize * (pageNum - 1))
-                .Take(pageSize)
+            var entertainers = _context.Entertainers
+                .ToList() // Also bring entertainers into memory so we can fully use C#
+                .Select(e => new
+                {
+                    e.EntertainerID,
+                    e.EntStageName,
+                    BookingCount = engagements.Count(en => en.EntertainerID == e.EntertainerID),
+                    LastBookingDate = engagements
+                        .Where(en => en.EntertainerID == e.EntertainerID && DateTime.TryParse(en.StartDate, out _))
+                        .Select(en => DateTime.Parse(en.StartDate!))
+                        .OrderByDescending(d => d)
+                        .FirstOrDefault()
+                })
                 .ToList();
 
-            var result = new
-            {
-                Books = books,
-                TotalNumBooks = totalNumBooks
-            };
-
-            return Ok(result);
+            return Ok(entertainers);
         }
 
-        [HttpGet("types")]
-        public IActionResult GetBookTypes()
+
+        // GET: api/entertainers/5
+        [HttpGet("{id}")]
+        public IActionResult GetEntertainerById(int id)
         {
-            var bookTypes = _bookContext.Books
-                .Select(b => new { b.Category })
-                .Distinct()
-                .ToList();
-            return Ok(bookTypes);
+            var entertainer = _context.Entertainers.Find(id);
+            if (entertainer == null)
+                return NotFound();
+
+            return Ok(entertainer);
         }
 
-    [HttpPost("Add")]
-    public IActionResult AddBook([FromBody] Book newBook)
-    {
-        _bookContext.Books.Add(newBook);
-        _bookContext.SaveChanges();
-        return Ok(newBook);
-    }
-
-    [HttpPut("UpdateBook/{bookID}")]
-    public IActionResult UpdateBook(int bookID, [FromBody] Book updatedBook)
-    {
-        var existingBook = _bookContext.Books.Find(bookID);
-
-        existingBook.Title = updatedBook.Title;
-        existingBook.Author = updatedBook.Author;
-        existingBook.Publisher = updatedBook.Publisher;
-        existingBook.ISBN = updatedBook.ISBN;
-        existingBook.Classification = updatedBook.Classification;
-        existingBook.Category = updatedBook.Category;
-        existingBook.PageCount = updatedBook.PageCount;
-        existingBook.Price = updatedBook.Price;
-
-        _bookContext.Books.Update(existingBook);
-        _bookContext.SaveChanges();
-
-        return Ok(existingBook);
-    }
-
-    [HttpDelete("DeleteBook/{bookID}")]
-    public IActionResult DeleteBook(int bookID)
-    {
-        var book = _bookContext.Books.Find(bookID);
-
-        if (book == null)
+        // POST: api/entertainers
+        [HttpPost]
+        public IActionResult AddEntertainer([FromBody] Entertainer newEntertainer)
         {
-            return NotFound(new {message = "Book not found"});
+            _context.Entertainers.Add(newEntertainer);
+            _context.SaveChanges();
+            return Ok(newEntertainer);
         }
 
-        _bookContext.Books.Remove(book);
-        _bookContext.SaveChanges();
+        // PUT: api/entertainers/5
+        [HttpPut("{id}")]
+        public IActionResult UpdateEntertainer(int id, [FromBody] Entertainer updated)
+        {
+            var existing = _context.Entertainers.Find(id);
+            if (existing == null) return NotFound();
 
-        return NoContent();
-    }
+            _context.Entry(existing).CurrentValues.SetValues(updated);
+            _context.SaveChanges();
+            return Ok(existing);
+        }
 
+        // DELETE: api/entertainers/5
+        [HttpDelete("{id}")]
+        public IActionResult DeleteEntertainer(int id)
+        {
+            var entertainer = _context.Entertainers.Find(id);
+            if (entertainer == null) return NotFound();
+
+            _context.Entertainers.Remove(entertainer);
+            _context.SaveChanges();
+            return NoContent();
+        }
     }
 }

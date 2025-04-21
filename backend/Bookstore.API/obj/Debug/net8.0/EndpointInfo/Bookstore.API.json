@@ -5,88 +5,36 @@
     "version": "1.0"
   },
   "paths": {
-    "/Book/paged": {
+    "/api/Entertainers": {
       "get": {
         "tags": [
-          "Book"
-        ],
-        "parameters": [
-          {
-            "name": "pageSize",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 5
-            }
-          },
-          {
-            "name": "pageNum",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 1
-            }
-          },
-          {
-            "name": "sortOrder",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "default": "asc"
-            }
-          },
-          {
-            "name": "types",
-            "in": "query",
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          }
+          "Entertainers"
         ],
         "responses": {
           "200": {
             "description": "OK"
           }
         }
-      }
-    },
-    "/Book/types": {
-      "get": {
-        "tags": [
-          "Book"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/Book/Add": {
+      },
       "post": {
         "tags": [
-          "Book"
+          "Entertainers"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Book"
+                "$ref": "#/components/schemas/Entertainer"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/Book"
+                "$ref": "#/components/schemas/Entertainer"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/Book"
+                "$ref": "#/components/schemas/Entertainer"
               }
             }
           }
@@ -98,14 +46,35 @@
         }
       }
     },
-    "/Book/UpdateBook/{bookID}": {
-      "put": {
+    "/api/Entertainers/{id}": {
+      "get": {
         "tags": [
-          "Book"
+          "Entertainers"
         ],
         "parameters": [
           {
-            "name": "bookID",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Entertainers"
+        ],
+        "parameters": [
+          {
+            "name": "id",
             "in": "path",
             "required": true,
             "schema": {
@@ -118,17 +87,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Book"
+                "$ref": "#/components/schemas/Entertainer"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/Book"
+                "$ref": "#/components/schemas/Entertainer"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/Book"
+                "$ref": "#/components/schemas/Entertainer"
               }
             }
           }
@@ -138,16 +107,14 @@
             "description": "OK"
           }
         }
-      }
-    },
-    "/Book/DeleteBook/{bookID}": {
+      },
       "delete": {
         "tags": [
-          "Book"
+          "Entertainers"
         ],
         "parameters": [
           {
-            "name": "bookID",
+            "name": "id",
             "in": "path",
             "required": true,
             "schema": {
@@ -166,54 +133,52 @@
   },
   "components": {
     "schemas": {
-      "Book": {
-        "required": [
-          "author",
-          "category",
-          "classification",
-          "isbn",
-          "pageCount",
-          "price",
-          "publisher",
-          "title"
-        ],
+      "Entertainer": {
         "type": "object",
         "properties": {
-          "bookID": {
+          "entertainerID": {
             "type": "integer",
             "format": "int32"
           },
-          "title": {
-            "minLength": 1,
-            "type": "string"
+          "entStageName": {
+            "type": "string",
+            "nullable": true
           },
-          "author": {
-            "minLength": 1,
-            "type": "string"
+          "entSSN": {
+            "type": "string",
+            "nullable": true
           },
-          "publisher": {
-            "minLength": 1,
-            "type": "string"
+          "entStreetAddress": {
+            "type": "string",
+            "nullable": true
           },
-          "isbn": {
-            "minLength": 1,
-            "type": "string"
+          "entCity": {
+            "type": "string",
+            "nullable": true
           },
-          "classification": {
-            "minLength": 1,
-            "type": "string"
+          "entState": {
+            "type": "string",
+            "nullable": true
           },
-          "category": {
-            "minLength": 1,
-            "type": "string"
+          "entZipCode": {
+            "type": "string",
+            "nullable": true
           },
-          "pageCount": {
-            "type": "integer",
-            "format": "int32"
+          "entPhoneNumber": {
+            "type": "string",
+            "nullable": true
           },
-          "price": {
-            "type": "number",
-            "format": "float"
+          "entWebPage": {
+            "type": "string",
+            "nullable": true
+          },
+          "entEMailAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "dateEntered": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
